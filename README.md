@@ -8,7 +8,7 @@ This is the standard template for Terraform modules. This contains some useful s
 2. Tested
 3. Shareable
 
-Repos created off of this template will follow the naming convention `terraform-aws-MOD_NAME-module`, replacing MOD_NAME with the name of your module.
+Repos created off of this template will follow the naming convention `terraform-aws-sqs-module-module`, replacing sqs-module with the name of your module.
 
 ## TODO
 

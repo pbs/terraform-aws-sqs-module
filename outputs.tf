@@ -1,9 +1,11 @@
-output "hello_world" {
-  description = "Hello world output"
-  value       = "Hello, World!"
+output "arn" {
+  value = aws_sqs_queue.queue.arn
 }
 
-output "tags" {
-  description = "The tags"
-  value       = local.tags
+output "name" {
+  value = aws_sqs_queue.queue.name
+}
+
+output "url" {
+  value = aws_sqs_queue.queue.url
 }
