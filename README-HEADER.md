@@ -1,4 +1,4 @@
-# PBS TF sqs module
+# PBS TF SQS Module
 
 ## Installation
 
@@ -16,28 +16,49 @@ More information can be found on these install methods and more in [the document
 
 ## Usage
 
-<!-- TODO -->
-This should be a basic description of what this module does.
-Fill this out before completing usage of this template.
-<!-- TODO -->
+Provisions an SQS queue.
 
 Integrate this module like so:
 
 ```hcl
-module "sqs" {
+module "queue" {
   source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
-  <!-- TODO -->
-  Show some examples of valid values for required parameters.
-  <!-- TODO -->
-
-  # Tagging Parameters
   organization = var.organization
   environment  = var.environment
   product      = var.product
   repo         = var.repo
+}
+```
 
-  # Optional Parameters
+If you need to integrate a secondary queue as a dead letter queue, this would be a valid configuration:
+
+```hcl
+module "queue" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  name = "my-queue"
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
+}
+
+module "dlq" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  name = "my-queue-dlq
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = module.queue.arn
+    maxReceiveCount     = 5
+  })
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
 }
 ```
 
