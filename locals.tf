@@ -1,5 +1,9 @@
 locals {
-  name    = var.name != null ? var.name : var.product
+  name = var.name != null ? var.name : var.product
+
+  queue_name   = var.use_prefix ? null : local.name
+  queue_prefix = var.use_prefix ? "${local.name}-" : null
+
   creator = "terraform"
 
   defaulted_tags = merge(

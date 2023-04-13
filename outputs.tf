@@ -1,9 +1,14 @@
-output "hello_world" {
-  description = "Hello world output"
-  value       = "Hello, World!"
+output "arn" {
+  description = "The ARN of the SQS queue"
+  value       = aws_sqs_queue.queue.arn
 }
 
-output "tags" {
-  description = "The tags"
-  value       = local.tags
+output "name" {
+  description = "The name of the SQS queue"
+  value       = aws_sqs_queue.queue.name
+}
+
+output "url" {
+  description = "The URL of the SQS queue"
+  value       = aws_sqs_queue.queue.url
 }

@@ -1,4 +1,4 @@
-module "MOD_SHORTNAME" {
+module "queue" {
   source = "../.."
 
   organization = var.organization

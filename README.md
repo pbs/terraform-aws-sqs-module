@@ -1,24 +1,130 @@
-# TF Module Template
+# PBS TF SQS Module
 
-Version: `0.0.10`
+## Installation
 
-This is the standard template for Terraform modules. This contains some useful scaffolding to create modules that are:
+### Using the Repo Source
 
-1. Well documented
-2. Tested
-3. Shareable
+Use this URL for the source of the module. See the usage examples below for more details.
 
-Repos created off of this template will follow the naming convention `terraform-aws-MOD_NAME-module`, replacing MOD_NAME with the name of your module.
+```hcl
+github.com/pbs/terraform-aws-sqs-module?ref=x.y.z
+```
 
-## TODO
+### Alternative Installation Methods
 
-After creating a repo from this template, your responsibilities are as follows:
+More information can be found on these install methods and more in [the documentation here](./docs/general/install).
 
-- [ ] Run the [wizard.sh](/scripts/wizard.sh) script (`./scripts/wizard.sh`) to populate the boilerplate placeholders with their appropriate values. This includes the proper name of the module and a standardized slug. These values are automatically populated from the name of the repository, but can be adjusted at your discretion.
-- [ ] Update [main.tf](/main.tf), [outputs.tf](/outputs.tf), [required.tf](/required.tf) and [optional.tf](/optional.tf) with the configuration for your module (delete files you don't need).
-- [ ] Double check that the [terraform.tf](/terraform.tf) and [.tool-versions](/.tool-versions) files have the appropriate versions for resources you are going to use. For major updates, consider updating this template!
-- [ ] Create some [examples](/examples) of your module being used. Remember that the examples there will be used for tests that run in real AWS accounts!
-- [ ] Create some [tests](/tests) to validate the proper configuration of your module. See instructions [here](/docs/general/dev).
-- [ ] Update [README-HEADER.md](/README-HEADER.md) based on the properties of your module. This file will replace the README.md on commit if you follow the instructions [here](/docs/general/dev).
-- [ ] Add the git hooks listed under ## Hooks [here](/docs/general/dev). These scripts run as part of the CI, but your development experience will be smoother if you have them running locally as well.
-- [ ] Add this template as a remote (`git remote add template git@github.com:pbs/terraform-aws-template-v2.git`). This can be used to allow you to merge back any changes you like from the template into your module.
+## Usage
+
+Provisions an SQS queue.
+
+Integrate this module like so:
+
+```hcl
+module "queue" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
+}
+```
+
+If you need to integrate a secondary queue as a dead letter queue, this would be a valid configuration:
+
+```hcl
+module "queue" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  name = "my-queue"
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
+}
+
+module "dlq" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  name = "my-queue-dlq
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = module.queue.arn
+    maxReceiveCount     = 5
+  })
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
+}
+```
+
+## Adding This Version of the Module
+
+If this repo is added as a subtree, then the version of the module should be close to the version shown here:
+
+`x.y.z`
+
+Note, however that subtrees can be altered as desired within repositories.
+
+Further documentation on usage can be found [here](./docs).
+
+Below is automatically generated documentation on this Terraform module using [terraform-docs][terraform-docs]
+
+---
+
+[terraform-docs]: https://github.com/terraform-docs/terraform-docs
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.5.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.62.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_sqs_queue.queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_default_tags.common_tags](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/default_tags) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_environment"></a> [environment](#input\_environment) | Environment (sharedtools, dev, staging, qa, prod) | `string` | n/a | yes |
+| <a name="input_organization"></a> [organization](#input\_organization) | Organization using this module. Used to prefix tags so that they are easily identified as being from your organization | `string` | n/a | yes |
+| <a name="input_product"></a> [product](#input\_product) | Tag used to group resources according to product | `string` | n/a | yes |
+| <a name="input_repo"></a> [repo](#input\_repo) | Tag used to point to the repo using this module | `string` | n/a | yes |
+| <a name="input_delay_seconds"></a> [delay\_seconds](#input\_delay\_seconds) | The time in seconds that the delivery of all messages in the queue will be delayed. An integer from 0 to 900 (15 minutes). The default for this attribute is 0 seconds. | `string` | `null` | no |
+| <a name="input_max_message_size"></a> [max\_message\_size](#input\_max\_message\_size) | The limit of how many bytes a message can contain before Amazon SQS rejects it. An integer from 1024 bytes (1 KiB) up to 262144 bytes (256 KiB). The default for this attribute is 262144 (256 KiB). | `number` | `null` | no |
+| <a name="input_message_retention_seconds"></a> [message\_retention\_seconds](#input\_message\_retention\_seconds) | The number of seconds Amazon SQS retains a message. Integer representing seconds, from 60 (1 minute) to 1209600 (14 days). The default for this attribute is 345600 (4 days). | `number` | `null` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name of the SQS Queue | `string` | `null` | no |
+| <a name="input_receive_wait_time_seconds"></a> [receive\_wait\_time\_seconds](#input\_receive\_wait\_time\_seconds) | The time for which a ReceiveMessage call will wait for a message to arrive (long polling) before returning. An integer from 0 to 20 (seconds). The default for this attribute is 0, meaning that the call will return immediately. | `number` | `null` | no |
+| <a name="input_redrive_policy"></a> [redrive\_policy](#input\_redrive\_policy) | The JSON policy to set up the Dead Letter Queue, see AWS docs. Note: when specifying maxReceiveCount, you must specify it as an integer (5), and not a string ("5"). | `string` | `null` | no |
+| <a name="input_sqs_managed_sse_enabled"></a> [sqs\_managed\_sse\_enabled](#input\_sqs\_managed\_sse\_enabled) | Boolean to enable server-side encryption (SSE) of message content with SQS-owned encryption keys. See Encryption at rest. Terraform will only perform drift detection of its value when present in a configuration. | `bool` | `true` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Extra tags | `map(string)` | `{}` | no |
+| <a name="input_use_prefix"></a> [use\_prefix](#input\_use\_prefix) | Create queue with prefix instead of explicit name | `bool` | `true` | no |
+| <a name="input_visibility_timeout_seconds"></a> [visibility\_timeout\_seconds](#input\_visibility\_timeout\_seconds) | The visibility timeout for the queue. An integer from 0 to 43200 (12 hours). The default for this attribute is 30. For more information about visibility timeout, see AWS docs. | `number` | `null` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the SQS queue |
+| <a name="output_name"></a> [name](#output\_name) | The name of the SQS queue |
+| <a name="output_url"></a> [url](#output\_url) | The URL of the SQS queue |

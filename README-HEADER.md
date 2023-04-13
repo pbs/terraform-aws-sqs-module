@@ -1,4 +1,4 @@
-# PBS TF MOD_TITLE
+# PBS TF SQS Module
 
 ## Installation
 
@@ -7,7 +7,7 @@
 Use this URL for the source of the module. See the usage examples below for more details.
 
 ```hcl
-github.com/pbs/terraform-aws-MOD_NAME?ref=x.y.z
+github.com/pbs/terraform-aws-sqs-module?ref=x.y.z
 ```
 
 ### Alternative Installation Methods
@@ -16,28 +16,49 @@ More information can be found on these install methods and more in [the document
 
 ## Usage
 
-<!-- TODO -->
-This should be a basic description of what this module does.
-Fill this out before completing usage of this template.
-<!-- TODO -->
+Provisions an SQS queue.
 
 Integrate this module like so:
 
 ```hcl
-module "MOD_SHORTNAME" {
-  source = "github.com/pbs/terraform-aws-MOD_NAME?ref=x.y.z"
+module "queue" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
-  <!-- TODO -->
-  Show some examples of valid values for required parameters.
-  <!-- TODO -->
-
-  # Tagging Parameters
   organization = var.organization
   environment  = var.environment
   product      = var.product
   repo         = var.repo
+}
+```
 
-  # Optional Parameters
+If you need to integrate a secondary queue as a dead letter queue, this would be a valid configuration:
+
+```hcl
+module "queue" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  name = "my-queue"
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
+}
+
+module "dlq" {
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
+
+  name = "my-queue-dlq
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = module.queue.arn
+    maxReceiveCount     = 5
+  })
+
+  organization = var.organization
+  environment  = var.environment
+  product      = var.product
+  repo         = var.repo
 }
 ```
 

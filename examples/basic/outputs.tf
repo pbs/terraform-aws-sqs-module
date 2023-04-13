@@ -1,4 +1,11 @@
-output "hello_world" {
-  description = "Hello World"
-  value       = module.MOD_SHORTNAME.hello_world
+output "arn" {
+  value = module.queue.arn
+}
+
+output "name" {
+  value = module.queue.name
+}
+
+output "url" {
+  value = module.queue.url
 }
