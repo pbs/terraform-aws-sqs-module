@@ -48,7 +48,7 @@ module "queue" {
 module "dlq" {
   source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
-  name = "my-queue-dlq
+  name = "my-queue-dlq"
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = module.queue.arn
