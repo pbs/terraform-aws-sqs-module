@@ -39,6 +39,11 @@ module "queue" {
 
   name = "my-queue"
 
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = module.dlq.arn
+    maxReceiveCount     = 5
+  })
+
   organization = var.organization
   environment  = var.environment
   product      = var.product
@@ -49,11 +54,6 @@ module "dlq" {
   source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
   name = "my-queue-dlq"
-
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = module.queue.arn
-    maxReceiveCount     = 5
-  })
 
   organization = var.organization
   environment  = var.environment
