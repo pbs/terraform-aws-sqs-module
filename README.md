@@ -7,7 +7,7 @@
 Use this URL for the source of the module. See the usage examples below for more details.
 
 ```hcl
-github.com/pbs/terraform-aws-sqs-module?ref=0.0.1
+github.com/pbs/terraform-aws-sqs-module?ref=x.y.z
 ```
 
 ### Alternative Installation Methods
@@ -22,7 +22,7 @@ Integrate this module like so:
 
 ```hcl
 module "queue" {
-  source = "github.com/pbs/terraform-aws-sqs-module?ref=0.0.1"
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
   organization = var.organization
   environment  = var.environment
@@ -35,9 +35,14 @@ If you need to integrate a secondary queue as a dead letter queue, this would be
 
 ```hcl
 module "queue" {
-  source = "github.com/pbs/terraform-aws-sqs-module?ref=0.0.1"
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
   name = "my-queue"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = module.dlq.arn
+    maxReceiveCount     = 5
+  })
 
   organization = var.organization
   environment  = var.environment
@@ -46,14 +51,9 @@ module "queue" {
 }
 
 module "dlq" {
-  source = "github.com/pbs/terraform-aws-sqs-module?ref=0.0.1"
+  source = "github.com/pbs/terraform-aws-sqs-module?ref=x.y.z"
 
-  name = "my-queue-dlq
-
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = module.queue.arn
-    maxReceiveCount     = 5
-  })
+  name = "my-queue-dlq"
 
   organization = var.organization
   environment  = var.environment
@@ -66,7 +66,7 @@ module "dlq" {
 
 If this repo is added as a subtree, then the version of the module should be close to the version shown here:
 
-`0.0.1`
+`x.y.z`
 
 Note, however that subtrees can be altered as desired within repositories.
 
